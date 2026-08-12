@@ -1,0 +1,152 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CardPlayer.ViewModels"
+             x:Class="CardPlayer.Views.RemoteSetupView"
+             x:DataType="vm:RemoteSetupViewModel">
+
+  <DockPanel>
+    <!-- Accent yellow separator bar below top-level tabs -->
+    <Border DockPanel.Dock="Top" Height="5" Background="{StaticResource AccentBrush}"/>
+
+    <Grid RowDefinitions="Auto,*">
+
+    <!-- ── Top bar: profile picker + settings ──────────────────────────── -->
+    <Border Grid.Row="0" Background="{StaticResource BgSurfaceBrush}"
+            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+            Padding="12,10">
+      <WrapPanel Orientation="Horizontal">
+
+        <!-- Profile dropdown -->
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,24,0">
+          <TextBlock Text="PROFILE:" Classes="muted" VerticalAlignment="Center"/>
+          <ComboBox ItemsSource="{Binding Profiles}"
+                    SelectedItem="{Binding SelectedProfile}"
+                    MinWidth="160">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:RemoteProfileViewModel">
+                <TextBlock Text="{Binding Name}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <Button Command="{Binding AddProfileCommand}"    ToolTip.Tip="New profile"><Path Classes="icon" Data="{StaticResource IconPlus}" Width="13" Height="13"/></Button>
+          <Button Command="{Binding DeleteProfileCommand}" Classes="danger" ToolTip.Tip="Delete profile"><Path Classes="icon" Data="{StaticResource IconTrash}" Width="14" Height="14"/></Button>
+        </StackPanel>
+
+        <!-- Profile name -->
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,24,0">
+          <TextBlock Text="NAME:" Classes="muted" VerticalAlignment="Center"/>
+          <TextBox Text="{Binding SelectedProfile.Name}" Width="160" Watermark="Profile name"/>
+        </StackPanel>
+
+        <!-- Grid size -->
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,24,0">
+          <TextBlock Text="ROWS:" Classes="muted" VerticalAlignment="Center"/>
+          <TextBox Text="{Binding SelectedProfile.Rows, Converter={x:Static vm:NullableIntConverter.Instance}}" Width="50"/>
+          <TextBlock Text="COLS:" Classes="muted" VerticalAlignment="Center"/>
+          <TextBox Text="{Binding SelectedProfile.Cols, Converter={x:Static vm:NullableIntConverter.Instance}}" Width="50"/>
+        </StackPanel>
+
+        <!-- Learn controls -->
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Command="{Binding SelectedProfile.StartLearnCommand}"
+                  IsVisible="{Binding !SelectedProfile.IsLearning}"
+                  ToolTip.Tip="Click a cell to select it, then press remote buttons to assign IR codes.">
+            <StackPanel Orientation="Horizontal" Spacing="6"><Path Classes="icon" Data="{StaticResource IconAntenna}" Width="15" Height="15"/><TextBlock Text="Start Learning" VerticalAlignment="Center"/></StackPanel>
+          </Button>
+          <Button Command="{Binding SelectedProfile.CancelLearnCommand}"
+                  IsVisible="{Binding SelectedProfile.IsLearning}"
+                  Classes="danger">
+            <StackPanel Orientation="Horizontal" Spacing="6"><Path Classes="icon" Data="{StaticResource IconClose}" Width="13" Height="13"/><TextBlock Text="Stop Learning" VerticalAlignment="Center"/></StackPanel>
+          </Button>
+          <TextBlock IsVisible="{Binding SelectedProfile.IsLearning}"
+                     Text="● LEARNING — press remote buttons"
+                     Foreground="{StaticResource DirtyBrush}"
+                     FontWeight="SemiBold"
+                     VerticalAlignment="Center"/>
+          <Button Command="{Binding SelectedProfile.ClearSelectedCommand}"
+                  ToolTip.Tip="Clear label and IR code from selected cell">
+            <StackPanel Orientation="Horizontal" Spacing="6"><Path Classes="icon" Data="{StaticResource IconTrash}" Width="14" Height="14"/><TextBlock Text="Clear Cell" VerticalAlignment="Center"/></StackPanel>
+          </Button>
+        </StackPanel>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ── Remote grid ──────────────────────────────────────────────────── -->
+    <ScrollViewer Grid.Row="1" Margin="16"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top">
+      <ItemsControl ItemsSource="{Binding SelectedProfile.Cells}"
+                    HorizontalAlignment="Left" VerticalAlignment="Top">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid
+              Columns="{Binding $parent[ItemsControl].((vm:RemoteSetupViewModel)DataContext).SelectedProfile.Cols}"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:RemoteCellEditorViewModel">
+            <Border Margin="4"
+                    BorderThickness="2"
+                    CornerRadius="4"
+                    MinWidth="70"
+                    MinHeight="60"
+                    Classes.selected="{Binding IsSelected}"
+                    Classes.learning="{Binding IsLearning}"
+                    Classes="remoteCell">
+              <Grid RowDefinitions="*,Auto">
+
+                <!-- Top: label editable, clicking selects cell -->
+                <Button Grid.Row="0"
+                        Command="{Binding $parent[ItemsControl].((vm:RemoteSetupViewModel)DataContext).SelectedProfile.SelectCellCommand}"
+                        CommandParameter="{Binding}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="4,6">
+                  <TextBox Text="{Binding Label}"
+                           Watermark="Label"
+                           BorderThickness="0"
+                           Background="Transparent"
+                           TextAlignment="Center"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Padding="2"/>
+                </Button>
+
+                <!-- Bottom: IR code display, click to select for learning -->
+                <Button Grid.Row="1"
+                        Command="{Binding $parent[ItemsControl].((vm:RemoteSetupViewModel)DataContext).SelectedProfile.SelectCellCommand}"
+                        CommandParameter="{Binding}"
+                        Background="{StaticResource BgSurfaceBrush}"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="4,4"
+                        CornerRadius="0,0,3,3">
+                  <TextBlock Text="{Binding IrCode}"
+                             FontSize="9"
+                             FontFamily="Consolas, monospace"
+                             Foreground="{StaticResource TextMutedBrush}"
+                             HorizontalAlignment="Center"
+                             TextTrimming="CharacterEllipsis"/>
+                </Button>
+
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+
+
+  </Grid>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,540 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:CardPlayer.Views">
+
+  <!-- ── Palette ──────────────────────────────────────────────────────── -->
+  <Styles.Resources>
+    <Color x:Key="BgBase">#F5F7FA</Color>
+    <Color x:Key="BgSurface">#FFFFFF</Color>
+    <Color x:Key="BgElevated">#ECEEF2</Color>
+    <Color x:Key="BorderColor">#D0D4DC</Color>
+    <Color x:Key="AccentColor">#FFDD7B</Color>
+    <Color x:Key="AccentHover">#FFE89E</Color>
+    <Color x:Key="DangerColor">#C84040</Color>
+    <Color x:Key="SuccessColor">#3A9E72</Color>
+    <Color x:Key="TextPrimary">#231F20</Color>
+    <Color x:Key="TextMuted">#6B7080</Color>
+    <Color x:Key="DirtyIndicator">#85BEC6</Color>
+
+    <SolidColorBrush x:Key="BgBaseBrush"      Color="{StaticResource BgBase}"/>
+    <SolidColorBrush x:Key="BgSurfaceBrush"   Color="{StaticResource BgSurface}"/>
+    <SolidColorBrush x:Key="BgElevatedBrush"  Color="{StaticResource BgElevated}"/>
+    <SolidColorBrush x:Key="BorderBrush"      Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="AccentBrush"      Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHover}"/>
+
+    <!-- ── Icon geometries (flat SVG-style, drawn in a 0..24 viewbox) ────── -->
+    <!-- Magnifying glass -->
+    <StreamGeometry x:Key="IconSearch">M0 0 M24 24 M9 2 A7 7 0 1 0 9 16 A7 7 0 1 0 9 2 M14 14 L21 21</StreamGeometry>
+    <!-- Folder -->
+    <StreamGeometry x:Key="IconFolder">M0 0 M24 24 M3 6 L10 6 L12 9 L21 9 L21 20 L3 20 Z</StreamGeometry>
+    <!-- Folder open (import) -->
+    <StreamGeometry x:Key="IconFolderOpen">M0 0 M24 24 M2 5 L9 5 L11 8 L22 8 L22 10 L5 10 L2 20 L2 5 Z M5 10 L22 10 L19 20 L2 20 Z</StreamGeometry>
+    <!-- Trash can -->
+    <StreamGeometry x:Key="IconTrash">M0 0 M24 24 M6 7 L18 7 L17 21 L7 21 Z M3 7 L21 7 M9 7 L9 4 L15 4 L15 7 M10 10 L10 18 M14 10 L14 18</StreamGeometry>
+    <!-- Play triangle -->
+    <StreamGeometry x:Key="IconPlay">M0 0 M24 24 M7 4 L21 12 L7 20 Z</StreamGeometry>
+    <!-- Save (floppy disk) -->
+    <StreamGeometry x:Key="IconSave">M0 0 M24 24 M3 3 L17 3 L21 7 L21 21 L3 21 Z M7 3 L7 9 L15 9 L15 3 M6 13 L18 13 L18 21 L6 21 Z</StreamGeometry>
+    <!-- Chevron left -->
+    <StreamGeometry x:Key="IconChevronLeft">M0 0 M24 24 M15 5 L8 12 L15 19</StreamGeometry>
+    <!-- Chevron right -->
+    <StreamGeometry x:Key="IconChevronRight">M0 0 M24 24 M9 5 L16 12 L9 19</StreamGeometry>
+    <!-- Chevron up -->
+    <StreamGeometry x:Key="IconChevronUp">M0 0 M24 24 M5 15 L12 8 L19 15</StreamGeometry>
+    <!-- Chevron down -->
+    <StreamGeometry x:Key="IconChevronDown">M0 0 M24 24 M5 9 L12 16 L19 9</StreamGeometry>
+    <!-- X / close / stop -->
+    <StreamGeometry x:Key="IconClose">M0 0 M24 24 M5 5 L19 19 M19 5 L5 19</StreamGeometry>
+    <!-- Antenna / broadcast (learning) -->
+    <StreamGeometry x:Key="IconAntenna">M0 0 M24 24 M12 13 L12 21 M8 21 L16 21 M12 11 A2 2 0 1 0 12 11.01 Z M7.5 6.5 A6 6 0 0 0 7.5 15.5 M16.5 6.5 A6 6 0 0 1 16.5 15.5 M9.5 9 A3 3 0 0 0 9.5 13 M14.5 9 A3 3 0 0 1 14.5 13</StreamGeometry>
+    <!-- Duplicate / copy -->
+    <StreamGeometry x:Key="IconDuplicate">M0 0 M24 24 M8 8 L20 8 L20 20 L8 20 Z M4 4 L16 4 L16 6 M4 4 L4 16 L6 16</StreamGeometry>
+    <!-- Keyboard / text keys -->
+    <StreamGeometry x:Key="IconKeyboard">M0 0 M24 24 M2 6 L22 6 L22 18 L2 18 Z M5 9 L5 9.01 M9 9 L9 9.01 M13 9 L13 9.01 M17 9 L17 9.01 M5 13 L5 13.01 M9 13 L9 13.01 M13 13 L13 13.01 M7 15 L17 15</StreamGeometry>
+    <!-- Refresh / reset -->
+    <StreamGeometry x:Key="IconRefresh">M0 0 M24 24 M4 8 A8 8 0 1 1 3 13 M4 3 L4 8 L9 8</StreamGeometry>
+    <!-- Plus / add -->
+    <StreamGeometry x:Key="IconPlus">M0 0 M24 24 M12 5 L12 19 M5 12 L19 12</StreamGeometry>
+    <!-- Warning triangle with exclamation mark -->
+    <StreamGeometry x:Key="IconWarning">M0 0 M24 24 M12 3 L22 20 L2 20 Z M12 9 L12 14 M12 17 L12 17.5</StreamGeometry>
+
+    <!-- Override Fluent theme system accent so CheckBox, RadioButton, etc. match -->
+    <Color x:Key="SystemAccentColor">#FFDD7B</Color>
+    <Color x:Key="SystemAccentColorLight1">#FFE89E</Color>
+    <Color x:Key="SystemAccentColorLight2">#FFF0BB</Color>
+    <Color x:Key="SystemAccentColorLight3">#FFF8D9</Color>
+    <Color x:Key="SystemAccentColorDark1">#E6C55A</Color>
+    <Color x:Key="SystemAccentColorDark2">#C9A83A</Color>
+    <Color x:Key="SystemAccentColorDark3">#A08020</Color>
+    <SolidColorBrush x:Key="DangerBrush"      Color="{StaticResource DangerColor}"/>
+    <SolidColorBrush x:Key="SuccessBrush"     Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
+    <SolidColorBrush x:Key="TextMutedBrush"   Color="{StaticResource TextMuted}"/>
+    <SolidColorBrush x:Key="DirtyBrush"       Color="{StaticResource DirtyIndicator}"/>
+  </Styles.Resources>
+
+  <!-- Window background -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{StaticResource BgBaseBrush}"/>
+    <Setter Property="FontFamily" Value="Consolas, 'Cascadia Code', 'Fira Code', monospace"/>
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- TextBlock defaults -->
+  <Style Selector="TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- TextBox -->
+  <Style Selector="TextBox">
+    <Setter Property="Background"  Value="{StaticResource BgElevatedBrush}"/>
+    <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="3"/>
+    <Setter Property="Padding"     Value="6,4"/>
+    <Setter Property="FontFamily"  Value="Consolas, 'Cascadia Code', monospace"/>
+    <Setter Property="FontSize"    Value="12"/>
+    <Setter Property="CaretBrush"  Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="{StaticResource DirtyBrush}"/>
+  </Style>
+
+  <!-- Button base -->
+  <Style Selector="Button">
+    <Setter Property="Background"               Value="{StaticResource BgElevatedBrush}"/>
+    <Setter Property="Foreground"               Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="BorderBrush"              Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness"          Value="1"/>
+    <Setter Property="CornerRadius"             Value="3"/>
+    <Setter Property="Padding"                  Value="12,6"/>
+    <Setter Property="FontSize"                 Value="12"/>
+    <Setter Property="Cursor"                   Value="Hand"/>
+    <Setter Property="VerticalContentAlignment"   Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="Button /template/ ContentPresenter">
+    <Setter Property="VerticalContentAlignment"   Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="Button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background"  Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource DirtyBrush}"/>
+  </Style>
+
+  <!-- Accent button — dark text on yellow so it's readable -->
+  <Style Selector="Button.accent">
+    <Setter Property="Background"    Value="{StaticResource AccentBrush}"/>
+    <Setter Property="BorderBrush"   Value="{StaticResource AccentBrush}"/>
+    <Setter Property="Foreground"    Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="FontWeight"    Value="SemiBold"/>
+    <Setter Property="ClipToBounds"  Value="False"/>
+  </Style>
+  <Style Selector="Button.accent /template/ ContentPresenter">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="ClipToBounds" Value="False"/>
+  </Style>
+  <Style Selector="Button.accent:pointerover /template/ ContentPresenter">
+    <Setter Property="Background"  Value="{StaticResource AccentHoverBrush}"/>
+    <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="Button.accent:pressed /template/ ContentPresenter">
+    <Setter Property="Background"  Value="{StaticResource AccentBrush}"/>
+    <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- Danger button -->
+  <Style Selector="Button.danger">
+    <Setter Property="Background"  Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
+    <Setter Property="Foreground"  Value="{StaticResource DangerBrush}"/>
+  </Style>
+  <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+    <Setter Property="Background"  Value="#18C84040"/>
+  </Style>
+
+  <!-- DataGrid -->
+  <Style Selector="DataGrid">
+    <Setter Property="Background"         Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="RowBackground"      Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderBrush"        Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness"    Value="1"/>
+    <Setter Property="FontSize"           Value="12"/>
+    <Setter Property="FontFamily"         Value="Consolas, 'Cascadia Code', monospace"/>
+    <Setter Property="Foreground"         Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="SelectionMode"      Value="Single"/>
+  </Style>
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background"    Value="{StaticResource BgElevatedBrush}"/>
+    <Setter Property="Foreground"    Value="{StaticResource TextMutedBrush}"/>
+    <Setter Property="FontSize"      Value="10"/>
+    <Setter Property="FontWeight"    Value="SemiBold"/>
+    <Setter Property="Padding"       Value="8,6"/>
+    <Setter Property="BorderBrush"   Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+  </Style>
+  <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Opacity" Value="0.2"/>
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+  <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Opacity" Value="0.2"/>
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+  <!-- Override Fluent's unfocused selection dimming — all selector variants -->
+  <Style Selector="DataGrid:not(:focus-within) DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Opacity" Value="0.2"/>
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+  <Style Selector="DataGrid:not(:focus-within) DataGridRow:selected Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Opacity" Value="0.2"/>
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+
+  <!-- TabControl base -->
+  <Style Selector="TabControl">
+    <Setter Property="Background" Value="{StaticResource BgBaseBrush}"/>
+    <Setter Property="Padding"    Value="0"/>
+  </Style>
+
+  <!-- ── Generic tab defaults ─────────────────────────────────────────── -->
+  <Style Selector="TabControl /template/ Border#PART_Border">
+    <Setter Property="Background"      Value="Transparent"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+  </Style>
+  <Style Selector="TabItem">
+    <Setter Property="Background"       Value="Transparent"/>
+    <Setter Property="Padding"          Value="16,8"/>
+    <Setter Property="FontSize"         Value="12"/>
+    <Setter Property="FontWeight"       Value="SemiBold"/>
+    <Setter Property="BorderThickness"  Value="0"/>
+    <Setter Property="Margin"           Value="0,0,2,0"/>
+  </Style>
+  <Style Selector="TabItem /template/ Border#PART_LayoutRoot">
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="TabItem:not(:selected):pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+  <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+    <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+    <Setter Property="IsVisible"  Value="True"/>
+    <Setter Property="Height"     Value="3"/>
+    <Setter Property="Margin"     Value="0"/>
+  </Style>
+
+  <Style Selector="TabControl.subLevel TabItem:selected /template/ Border#PART_SelectedPipe">
+    <Setter Property="Margin" Value="0,0,0,4"/>
+  </Style>
+  <Style Selector="TabControl.topLevel">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin"  Value="0"/>
+  </Style>
+  <Style Selector="TabControl.topLevel /template/ ItemsPresenter#PART_ItemsPresenter">
+    <Setter Property="Margin" Value="0"/>
+  </Style>
+  <Style Selector="TabControl.topLevel /template/ Border#PART_Border">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding"         Value="0"/>
+    <Setter Property="Margin"          Value="0"/>
+    <Setter Property="Background"      Value="{StaticResource BgBaseBrush}"/>
+  </Style>
+  <Style Selector="TabControl.topLevel TabItem">
+    <Setter Property="Padding"         Value="18,11"/>
+    <Setter Property="FontSize"        Value="13"/>
+    <Setter Property="FontWeight"      Value="SemiBold"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Margin"          Value="0,0,2,0"/>
+  </Style>
+  <Style Selector="TabControl.topLevel TabItem /template/ Border#PART_LayoutRoot">
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="TabControl.topLevel TabItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background"      Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1,0,1,0"/>
+    <Setter Property="CornerRadius"    Value="0"/>
+  </Style>
+  <Style Selector="TabControl.topLevel TabItem:not(:selected):pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+
+  <!-- ══ SUB-LEVEL (class="subLevel") — 12px ════════════════════════════ -->
+  <Style Selector="TabControl.subLevel /template/ Border#PART_Border">
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    <Setter Property="Padding"         Value="0"/>
+    <Setter Property="Background"      Value="{StaticResource BgBaseBrush}"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem">
+    <Setter Property="Padding"  Value="14,7,14,8"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="Margin"   Value="0,0,1,0"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem /template/ Border#PART_LayoutRoot">
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background"      Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1,0,1,0"/>
+    <Setter Property="CornerRadius"    Value="0"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem:not(:selected):pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+
+  <!-- ComboBox -->
+  <Style Selector="ComboBox">
+    <Setter Property="Background"  Value="{StaticResource BgElevatedBrush}"/>
+    <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding"     Value="6,4"/>
+    <Setter Property="FontSize"    Value="12"/>
+  </Style>
+  <!-- White background when a non-blank value is selected -->
+  <Style Selector="ComboBox.hasValue">
+    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}"/>
+  </Style>
+  <Style Selector="ComboBox.hasValue /template/ Border#Background">
+    <Setter Property="Background" Value="{StaticResource BgSurfaceBrush}"/>
+  </Style>
+
+  <!-- Label muted -->
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+    <Setter Property="FontSize"   Value="11"/>
+  </Style>
+
+  <!-- Tab label text — muted when unselected, dark when selected -->
+  <Style Selector="TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+  </Style>
+  <Style Selector="TabItem:selected TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="TabItem:not(:selected):pointerover TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- Section header -->
+  <Style Selector="TextBlock.sectionHeader">
+    <Setter Property="FontSize"   Value="11"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+    <Setter Property="Margin"     Value="0,0,0,6"/>
+  </Style>
+
+  <!-- Toolbar panel -->
+  <Style Selector="Border.toolbar">
+    <Setter Property="Background"      Value="{StaticResource BgSurfaceBrush}"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    <Setter Property="Padding"         Value="12,8"/>
+  </Style>
+
+  <!-- Expander — full width, compact header -->
+  <Style Selector="Expander">
+    <Setter Property="Background"          Value="{StaticResource BgBaseBrush}"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+  </Style>
+  <Style Selector="Expander /template/ Border#ExpanderContent">
+    <Setter Property="Background" Value="{StaticResource BgBaseBrush}"/>
+  </Style>
+  <!-- Toggle button stretches full width -->
+  <Style Selector="Expander /template/ ToggleButton#PART_toggle">
+    <Setter Property="HorizontalAlignment"        Value="Stretch"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="Padding"                    Value="8,4"/>
+    <Setter Property="ClipToBounds"               Value="False"/>
+  </Style>
+  <Style Selector="Expander /template/ ToggleButton#PART_toggle ContentPresenter">
+    <Setter Property="FontSize"      Value="10"/>
+    <Setter Property="FontWeight"    Value="SemiBold"/>
+    <Setter Property="ClipToBounds"  Value="False"/>
+  </Style>
+
+  <!-- Toolbar with top border -->
+  <Style Selector="Border.toolbar-top">
+    <Setter Property="Background"      Value="{StaticResource BgBaseBrush}"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    <Setter Property="Padding"         Value="12,8"/>
+  </Style>
+
+  <!-- Status bar -->
+  <Style Selector="Border.statusbar">
+    <Setter Property="Background"     Value="{StaticResource BgElevatedBrush}"/>
+    <Setter Property="BorderBrush"    Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    <Setter Property="Padding"        Value="12,6"/>
+  </Style>
+
+  <!-- Dirty dot -->
+  <Style Selector="Ellipse.dirtyDot">
+    <Setter Property="Width"  Value="7"/>
+    <Setter Property="Height" Value="7"/>
+    <Setter Property="Fill"   Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Margin" Value="6,0,0,0"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+
+  <!-- Remote grid cell — selected state (Button) -->
+  <Style Selector="Button.selected /template/ ContentPresenter">
+    <Setter Property="Background"  Value="{StaticResource AccentBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+  </Style>
+
+  <!-- Remote grid cell — learning state (Button) -->
+  <Style Selector="Button.learning /template/ ContentPresenter">
+    <Setter Property="Background"  Value="#4085BEC6"/>
+    <Setter Property="BorderBrush" Value="{StaticResource DirtyBrush}"/>
+  </Style>
+
+  <!-- Remote grid cell — default -->
+  <Style Selector="Border.remoteCell">
+    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="Background"  Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+
+  <!-- Remote grid cell — selected -->
+  <Style Selector="Border.remoteCell.selected">
+    <Setter Property="BorderBrush" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Background"  Value="#2585BEC6"/>
+  </Style>
+
+  <!-- Remote grid cell — learning -->
+  <Style Selector="Border.remoteCell.learning">
+    <Setter Property="BorderBrush" Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="Background"  Value="#3085BEC6"/>
+  </Style>
+
+  <!-- Program mapping cell — default -->
+  <Style Selector="Border.mappingCell">
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
+    <Setter Property="Background"      Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+
+  <!-- Program mapping cell — is a shift trigger key -->
+  <Style Selector="Border.mappingCell.shiftKey">
+    <Setter Property="BorderThickness" Value="2"/>
+    <Setter Property="BorderBrush"     Value="{StaticResource DirtyBrush}"/>
+  </Style>
+
+  <!-- Mapping cell — shift key assigned -->
+  <Style Selector="Border.shiftKey">
+    <Setter Property="BorderBrush"     Value="{StaticResource DirtyBrush}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+
+  <!-- Global tooltip delay -->
+  <Style Selector="ToolTip">
+    <Setter Property="ShowDelay" Value="1200"/>
+  </Style>
+
+  <!-- Scrollbar thumb — accent yellow -->
+  <Style Selector="ScrollBar /template/ Thumb">
+    <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+    <Setter Property="MinWidth"   Value="6"/>
+    <Setter Property="MinHeight"  Value="6"/>
+  </Style>
+  <Style Selector="ScrollBar /template/ Thumb:pointerover">
+    <Setter Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+  </Style>
+  <Style Selector="ScrollBar /template/ Thumb:pressed">
+    <Setter Property="Background" Value="#E6C55A"/>
+  </Style>
+  <!-- Scrollbar track — subtle -->
+  <Style Selector="ScrollBar /template/ Border#TrackBackground">
+    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
+  </Style>
+
+  <!-- Title bar window control buttons -->
+  <Style Selector="Button.titleClose:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#C84040"/>
+    <Setter Property="BorderBrush" Value="#C84040"/>
+  </Style>
+  <Style Selector="Button.titleClose:pointerover TextBlock">
+    <Setter Property="Foreground" Value="#FFFFFF"/>
+  </Style>
+
+  <!-- DataGrid checkbox column — checked state -->
+  <Style Selector="DataGridCell CheckBox:checked /template/ Grid > Border#NormalRectangle">
+    <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+  </Style>
+
+  <!-- CheckBox — checked background uses accent, checkmark glyph is black -->
+  <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+    <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+  </Style>
+  <Style Selector="CheckBox:checked /template/ Path">
+    <Setter Property="Stroke" Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="Fill"   Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="CheckBox:indeterminate /template/ Rectangle">
+    <Setter Property="Fill" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+
+  <!-- Sub-level tab label colour — must be last to beat DataTemplate/ContentPresenter inheritance -->
+  <Style Selector="TabControl.subLevel TabItem TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem:selected TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <Style Selector="TabControl.subLevel TabItem:not(:selected):pointerover TextBlock.tabLabel">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+  </Style>
+  <!-- ToggleSwitch knob: black when on so it's visible against the accent track -->
+  <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
+    <Setter Property="Fill" Value="#231F20"/>
+  </Style>
+
+  <!-- RadioButton: black center dot when selected (instead of white) -->
+  <Style Selector="RadioButton:checked /template/ Ellipse#CheckGlyph">
+    <Setter Property="Fill" Value="#231F20"/>
+  </Style>
+
+  <!-- Flat SVG icon: stroked path, no fill, inherits a consistent look -->
+  <Style Selector="Path.icon">
+    <Setter Property="Stroke" Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="StrokeThickness" Value="1.4"/>
+    <Setter Property="StrokeLineCap" Value="Round"/>
+    <Setter Property="StrokeJoin" Value="Round"/>
+    <Setter Property="Fill" Value="Transparent"/>
+    <Setter Property="Stretch" Value="Uniform"/>
+    <Setter Property="Width" Value="16.5"/>
+    <Setter Property="Height" Value="16.5"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+  <!-- Filled variant for solid glyphs like play -->
+  <Style Selector="Path.icon-filled">
+    <Setter Property="Fill" Value="{StaticResource TextPrimaryBrush}"/>
+    <Setter Property="Stretch" Value="Uniform"/>
+    <Setter Property="Width" Value="13"/>
+    <Setter Property="Height" Value="13"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+  <!-- Prevent scroll wheel from changing ComboBox value when dropdown is closed -->
+  <Style Selector="ComboBox">
+    <Setter Property="v:ComboBoxScrollBehavior.PreventScrollWhenClosed" Value="True"/>
+  </Style>
+
+</Styles>

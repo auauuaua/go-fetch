@@ -1,0 +1,369 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CardPlayer.ViewModels"
+             x:Class="CardPlayer.Views.PlayerTypeView"
+             x:DataType="vm:PlayerTypeViewModel">
+
+	<Grid ColumnDefinitions="280,320,*" Margin="16">
+
+		<!-- ── Col 0: program form ───────────────────────────────────────────── -->
+		<StackPanel Grid.Column="0" Spacing="12" Margin="0,0,20,0">
+
+			<StackPanel Spacing="4">
+				<TextBlock Text="PLAYER" Classes="muted"/>
+				<TextBox Text="{Binding PlayerType, UpdateSourceTrigger=PropertyChanged}" Watermark="e.g. Music, BD or DVD…"/>
+			</StackPanel>
+
+			<StackPanel Spacing="4">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<TextBlock Classes="muted">PROGRAM PATH:</TextBlock>
+					<TextBlock Text="{Binding ProgramDisplayName}"
+							   Classes="muted"
+							   IsVisible="{Binding ProgramDisplayName, Converter={x:Static vm:StringNotEmptyConverter.Instance}}"/>
+				</StackPanel>
+				<Grid ColumnDefinitions="*,Auto">
+					<TextBox Grid.Column="0" Text="{ReflectionBinding ProgramPath}" Watermark="C:\Program Files\…\program.exe" Margin="0,0,6,0"/>
+					<Button Grid.Column="1" x:Name="BrowseProgramButton" Padding="8,4" ToolTip.Tip="Browse for executable"><Path Classes="icon" Data="{StaticResource IconFolder}" Width="15" Height="15"/></Button>
+				</Grid>
+			</StackPanel>
+
+			<StackPanel Spacing="4">
+				<TextBlock Text="LAUNCH OPTIONS" Classes="muted"/>
+				<TextBox Text="{Binding Options}" Watermark="Extra command-line arguments"/>
+				<CheckBox IsChecked="{Binding NoTrailingSpace}" FontSize="11"
+						  ToolTip.Tip="Removes trailing space from options so the path follows directly after the last argument">
+					No trailing space
+				</CheckBox>
+			</StackPanel>
+
+			<StackPanel Spacing="4">
+				<TextBlock Text="SEND FUNCTION ON LAUNCH" Classes="muted"/>
+				<ComboBox ItemsSource="{Binding AvailableSendFunctions}"
+						  SelectedItem="{Binding SelectedSendFunction}"
+						  HorizontalAlignment="Stretch">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="vm:ProgramFunctionViewModel">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</StackPanel>
+
+			<StackPanel Spacing="4">
+				<TextBlock Text="LAUNCH FUNCTION DELAY (seconds)" Classes="muted"/>
+				<TextBox Text="{Binding SendKeysDelay}" Watermark="e.g. 1.5"
+						 Width="120" HorizontalAlignment="Left"/>
+			</StackPanel>
+
+			<StackPanel Spacing="4">
+				<TextBlock Text="SEND METHOD" Classes="muted"/>
+				<ComboBox ItemsSource="{Binding DispatchMethods}"
+						  SelectedItem="{Binding DispatchMethod}"
+						  HorizontalAlignment="Stretch"/>
+			</StackPanel>
+
+			<StackPanel Spacing="4" IsVisible="{Binding IsTcp}">
+				<TextBlock Text="TCP PORT" Classes="muted"/>
+				<TextBox Text="{Binding TcpPort, Converter={x:Static vm:NullableIntConverter.Instance}}" Watermark="9999"
+						 Width="100" HorizontalAlignment="Left"/>
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- ── Col 1: functions / reference tabs ─────────────────────────────── -->
+		<TabControl Grid.Column="1" Margin="0,0,20,0" Padding="0">
+
+			<!-- Functions tab -->
+			<TabItem Header="Functions">
+				<Grid RowDefinitions="*,Auto" Margin="0,8,0,0">
+
+					<DataGrid Grid.Row="0"
+							  ItemsSource="{Binding Functions}"
+							  SelectedItem="{Binding SelectedFunction}"
+							  AutoGenerateColumns="False"
+							  CanUserResizeColumns="True"
+							  CanUserSortColumns="False"
+							  IsReadOnly="False">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="FUNCTION" Binding="{Binding Name}"    Width="*" IsReadOnly="False"/>
+							<DataGridTextColumn Header="SEND"      Binding="{Binding KeySend}" Width="*" IsReadOnly="False"/>
+						</DataGrid.Columns>
+					</DataGrid>
+
+					<StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+						<Button Command="{Binding MoveFunctionUpCommand}"><Path Classes="icon" Data="{StaticResource IconChevronUp}" Width="13" Height="13"/></Button>
+						<Button Command="{Binding MoveFunctionDownCommand}"><Path Classes="icon" Data="{StaticResource IconChevronDown}" Width="13" Height="13"/></Button>
+						<Button Command="{Binding AddFunctionCommand}"><StackPanel Orientation="Horizontal" Spacing="6"><Path Classes="icon" Data="{StaticResource IconPlus}" Width="13" Height="13"/><TextBlock Text="Add" VerticalAlignment="Center"/></StackPanel></Button>
+						<Button Command="{Binding DeleteFunctionCommand}" Classes="danger"><Path Classes="icon" Data="{StaticResource IconTrash}" Width="14" Height="14"/></Button>
+					</StackPanel>
+
+				</Grid>
+			</TabItem>
+
+			<!-- Send Reference tab -->
+			<TabItem Header="Send Reference">
+				<ScrollViewer Margin="0,8,0,0"
+							  VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Disabled">
+					<StackPanel Spacing="8" Margin="0,0,16,12">
+
+						<!-- sendkeys -->
+						<StackPanel Spacing="6" IsVisible="{Binding !IsVk}">
+							<StackPanel Spacing="6" IsVisible="{Binding !IsTcp}">
+								<SelectableTextBlock FontSize="13" FontWeight="SemiBold"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="sendkeys"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="{}{SPACE} = spacebar"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="Special keys use braces:&#xA;{ENTER} or ~&#xA;{UP} {DOWN} {LEFT} {RIGHT}&#xA;{TAB}&#xA;{ADD} {SUBTRACT} {MULTIPLY} {DIVIDE}&#xA;{ESC}&#xA;{BACKSPACE} or {BS} or {BKSP}&#xA;{BREAK}&#xA;{CAPSLOCK}&#xA;{INSERT} or {INS}&#xA;{DELETE} or {DEL}&#xA;{HOME} {END}&#xA;{PGUP} {PGDN}&#xA;{NUMLOCK} {SCROLLLOCK}&#xA;{F1} … {F16}"/>
+								<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="Modifiers:"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="^ = Ctrl, + = Shift, % = Alt&#xA;^p = Ctrl+p&#xA;^+(EC) = Ctrl+Shift+E+C together"/>
+								<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="Repeat:"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="{}{key n}&#xA;{TAB 3} = Tab × 3"/>
+								<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="Media controls:"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="MEDIA_PLAY_PAUSE&#xA;MEDIA_STOP&#xA;MEDIA_NEXT_TRACK&#xA;MEDIA_PREV_TRACK&#xA;VOLUME_UP&#xA;VOLUME_DOWN&#xA;VOLUME_MUTE&#xA;LAUNCH_MEDIA_SELECT&#xA;BROWSER_BACK&#xA;BROWSER_FORWARD&#xA;BROWSER_REFRESH&#xA;BROWSER_STOP&#xA;BROWSER_HOME"/>
+							</StackPanel>
+							<!-- tcp -->
+							<StackPanel Spacing="6" IsVisible="{Binding IsTcp}">
+								<SelectableTextBlock FontSize="13" FontWeight="SemiBold"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="tcp"/>
+								<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+										   HorizontalAlignment="Stretch"
+										   Foreground="{StaticResource TextPrimaryBrush}"
+										   Text="The send value is sent as a UTF-8 string to 127.0.0.1 on the configured port. Format depends entirely on your receiving application."/>
+							</StackPanel>
+						</StackPanel>
+
+						<!-- vk -->
+						<StackPanel Spacing="6" IsVisible="{Binding IsVk}">
+							<SelectableTextBlock FontSize="13" FontWeight="SemiBold"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="vk"/>
+							<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="Named keys:&#xA;SPACE&#xA;RETURN&#xA;ESCAPE&#xA;TAB&#xA;LEFT  UP  RIGHT  DOWN&#xA;HOME  END  INSERT  DELETE&#xA;PRIOR (PgUp)  NEXT (PgDn)&#xA;F1 … F24&#xA;NUMPAD0 … NUMPAD9&#xA;MULTIPLY  ADD  SUBTRACT&#xA;DECIMAL  DIVIDE"/>
+							<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="Modifiers:"/>
+							<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="CTRL SHIFT ALT WIN&#xA;CTRL+P&#xA;CTRL+SHIFT+F10"/>
+							<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="Chain with |:"/>
+							<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="F5|TAB|RETURN&#xA;MEDIA_PLAY_PAUSE|VOLUME_UP"/>
+							<SelectableTextBlock FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="Media controls:"/>
+							<SelectableTextBlock FontSize="12" TextWrapping="Wrap"
+									   Foreground="{StaticResource TextPrimaryBrush}"
+									   Text="MEDIA_PLAY_PAUSE&#xA;MEDIA_STOP&#xA;MEDIA_NEXT_TRACK&#xA;MEDIA_PREV_TRACK&#xA;VOLUME_UP&#xA;VOLUME_DOWN&#xA;VOLUME_MUTE&#xA;LAUNCH_MEDIA_SELECT&#xA;BROWSER_BACK&#xA;BROWSER_FORWARD&#xA;BROWSER_REFRESH&#xA;BROWSER_STOP&#xA;BROWSER_HOME"/>
+						</StackPanel>
+
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
+
+		</TabControl>
+
+		<!-- ── Col 2: mapping grid + shift settings ─────────────────────────── -->
+		<Grid Grid.Column="2" RowDefinitions="Auto,*">
+
+			<!-- Main / Shift tabs -->
+			<TabControl Grid.Row="0" SelectedIndex="{Binding SelectedMappingTab}"
+						Padding="0" Margin="0,0,0,8">
+				<TabItem Header="Main"/>
+				<TabItem Header="Shift" IsEnabled="{Binding HasShiftKeys}"/>
+			</TabControl>
+
+			<!-- Grid + shift panel side by side -->
+			<Grid Grid.Row="1" ColumnDefinitions="Auto,Auto">
+
+				<!-- Mapping grid scroll -->
+				<ScrollViewer Grid.Column="0" VerticalAlignment="Top"
+							  HorizontalScrollBarVisibility="Auto"
+							  VerticalScrollBarVisibility="Auto">
+					<Grid>
+
+						<!-- Main grid -->
+						<ItemsControl ItemsSource="{Binding MappingCells}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<UniformGrid Columns="{Binding MappingGridCols}"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:ProgramMappingCellViewModel">
+									<Border Margin="3" CornerRadius="3"
+											MinWidth="70" MinHeight="60" Padding="4"
+											IsVisible="{Binding !IsEmpty}"
+											Classes="mappingCell"
+											Classes.shiftKey="{Binding IsShiftKey}">
+										<Panel>
+											<Button Background="Transparent" BorderThickness="0"
+													HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+													IsVisible="{Binding IsSelectingShift}"
+													Command="{Binding $parent[ItemsControl].((vm:PlayerTypeViewModel)DataContext).CellClickedDuringShiftSelectCommand}"
+													CommandParameter="{Binding}"
+													ZIndex="1"/>
+											<StackPanel Spacing="3" VerticalAlignment="Center">
+												<TextBlock Text="{Binding RemoteLabel}"
+														   FontSize="10" FontWeight="SemiBold"
+														   HorizontalAlignment="Center"
+														   Foreground="{StaticResource TextMutedBrush}"/>
+												<ComboBox ItemsSource="{Binding AvailableFunctions}"
+														  SelectedItem="{Binding SelectedFunction}"
+														  Classes.hasValue="{Binding SelectedFunction.DisplayName, Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+														  HorizontalAlignment="Stretch"
+														  FontSize="9" Padding="3,2">
+													<ComboBox.ItemTemplate>
+														<DataTemplate x:DataType="vm:ProgramFunctionViewModel">
+															<TextBlock Text="{Binding DisplayName}" FontSize="9"/>
+														</DataTemplate>
+													</ComboBox.ItemTemplate>
+												</ComboBox>
+											</StackPanel>
+										</Panel>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+						<!-- Shift grid -->
+						<ItemsControl ItemsSource="{Binding ShiftMappingCells}"
+									  IsVisible="{Binding SelectedMappingTab, Converter={x:Static vm:EqualityConverter.One}}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<UniformGrid Columns="{Binding MappingGridCols}"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:ProgramMappingCellViewModel">
+									<Border Margin="3" CornerRadius="3"
+											MinWidth="70" MinHeight="60" Padding="4"
+											IsVisible="{Binding !IsEmpty}"
+											Classes="mappingCell"
+											Classes.shiftKey="{Binding IsShiftKey}">
+										<StackPanel Spacing="3" VerticalAlignment="Center">
+											<TextBlock Text="{Binding RemoteLabel}"
+													   FontSize="10" FontWeight="SemiBold"
+													   HorizontalAlignment="Center"
+													   Foreground="{StaticResource TextMutedBrush}"/>
+											<ComboBox ItemsSource="{Binding AvailableFunctions}"
+													  SelectedItem="{Binding SelectedFunction}"
+													  Classes.hasValue="{Binding SelectedFunction.DisplayName, Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+													  HorizontalAlignment="Stretch"
+													  FontSize="9" Padding="3,2">
+												<ComboBox.ItemTemplate>
+													<DataTemplate x:DataType="vm:ProgramFunctionViewModel">
+														<TextBlock Text="{Binding DisplayName}" FontSize="9"/>
+													</DataTemplate>
+												</ComboBox.ItemTemplate>
+											</ComboBox>
+										</StackPanel>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+					</Grid>
+				</ScrollViewer>
+
+				<!-- Shift settings panel -->
+				<StackPanel Grid.Column="1" Spacing="12" Width="200" VerticalAlignment="Top" Margin="16,0,16,0">
+
+					<StackPanel Spacing="4">
+						<TextBlock Text="DEBOUNCE (ms)" Classes="muted"
+								   ToolTip.Tip="Ignore repeat IR codes for this many ms after one is received, for this player type on the active remote. 0 = off."/>
+						<TextBox Text="{Binding Debounce, Converter={x:Static vm:NullableIntConverter.Instance}}"
+								 HorizontalAlignment="Stretch"
+								 Watermark="0"/>
+					</StackPanel>
+
+					<Button Command="{Binding ToggleSelectShiftKeyCommand}"
+							HorizontalAlignment="Stretch"
+							ToolTip.Tip="Enter selection mode then click buttons to toggle them as shift triggers">
+						<TextBlock Text="{Binding SelectingShiftKey,
+                             Converter={x:Static vm:BoolToStringConverter.SelectShiftKey}}"
+								   TextWrapping="Wrap" TextAlignment="Center"/>
+					</Button>
+
+					<TextBlock Classes="muted" FontSize="10" TextWrapping="Wrap"
+							   IsVisible="{Binding HasShiftKeys}"
+							   Text="Blue border = shift trigger."/>
+
+					<StackPanel Spacing="8" IsVisible="{Binding HasShiftKeys}">
+
+						<StackPanel Spacing="4">
+							<TextBlock Text="SEND AT SHIFT START" Classes="muted"/>
+							<ComboBox ItemsSource="{Binding AvailableShiftEntryFunctions}"
+									  SelectedItem="{Binding SelectedShiftEntryFunction}"
+									  HorizontalAlignment="Stretch" FontSize="10">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:ProgramFunctionViewModel">
+										<TextBlock Text="{Binding DisplayName}" FontSize="10"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</StackPanel>
+
+						<StackPanel Spacing="4">
+							<TextBlock Text="SEND AT SHIFT END" Classes="muted"/>
+							<ComboBox ItemsSource="{Binding AvailableShiftExitFunctions}"
+									  SelectedItem="{Binding SelectedShiftExitFunction}"
+									  HorizontalAlignment="Stretch" FontSize="10">
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="vm:ProgramFunctionViewModel">
+										<TextBlock Text="{Binding DisplayName}" FontSize="10"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</StackPanel>
+
+						<StackPanel Spacing="4">
+							<TextBlock Text="SHIFT END METHOD" Classes="muted"/>
+							<ComboBox ItemsSource="{Binding ShiftEndMethods}"
+									  SelectedItem="{Binding ShiftEndMethod}"
+									  HorizontalAlignment="Stretch" FontSize="10"/>
+						</StackPanel>
+
+						<StackPanel Spacing="4" IsVisible="{Binding IsTimerMode}">
+							<TextBlock Text="TIMER DURATION (seconds)" Classes="muted"/>
+							<TextBox Text="{Binding ShiftTimerSeconds}"
+									 Width="100" HorizontalAlignment="Left"/>
+						</StackPanel>
+
+						<CheckBox IsChecked="{Binding ResetTimerOnKeyPress}"
+								  IsVisible="{Binding IsTimerMode}"
+								  FontSize="11">
+							Reset timer on key press
+						</CheckBox>
+
+					</StackPanel>
+
+				</StackPanel>
+
+			</Grid>
+
+		</Grid>
+
+	</Grid>
+</UserControl>

@@ -1,0 +1,277 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CardPlayer.ViewModels"
+             x:Class="CardPlayer.Views.PrintGeneratorView"
+             x:DataType="vm:PrintGeneratorViewModel">
+
+  <DockPanel>
+    <!-- White separator bar below top-level tabs -->
+    <Border DockPanel.Dock="Top" Height="5" Background="{StaticResource AccentBrush}"/>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" ColumnDefinitions="*,300" Margin="16">
+
+    <!-- ── Row 0: Profile bar ────────────────────────────────────────── -->
+    <Border Grid.Row="0" Grid.Column="1"
+            Background="{StaticResource BgElevatedBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1" CornerRadius="4"
+            Padding="10,8" Margin="16,0,0,10">
+      <StackPanel Spacing="6">
+        <TextBlock Text="PROFILE" Classes="muted"/>
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <ComboBox Grid.Column="0"
+                    ItemsSource="{Binding Profiles}"
+                    SelectedItem="{Binding SelectedProfile}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,6,0">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <Button Grid.Column="1"
+                  Command="{Binding AddProfileCommand}"
+                  ToolTip.Tip="Add new profile with current settings"
+                  Padding="8,4" Margin="0,0,4,0"><Path Classes="icon" Data="{StaticResource IconPlus}" Width="13" Height="13"/></Button>
+          <Button Grid.Column="2"
+                  Command="{Binding DeleteProfileCommand}"
+                  ToolTip.Tip="Delete selected profile"
+                  IsEnabled="{Binding Profiles.Count, Converter={x:Static vm:CountGreaterThanOneConverter.Instance}}"
+                  Classes="danger"
+                  Padding="8,4"><Path Classes="icon" Data="{StaticResource IconTrash}" Width="14" Height="14"/></Button>
+        </Grid>
+        <TextBlock Text="PROFILE NAME" Classes="muted" Margin="0,4,0,0"/>
+        <TextBox Text="{Binding ProfileName}" Watermark="Profile name…"/>
+      </StackPanel>
+    </Border>
+
+    <!-- ── Row 1: (profile name now inside Row 0 box) ───────────────────── -->
+
+    <!-- ── Row 1: Output folder ──────────────────────────────────────── -->
+    <StackPanel Grid.Row="1" Grid.Column="1"
+                Spacing="4" Margin="16,0,0,8">
+      <TextBlock Text="OUTPUT FOLDER" Classes="muted"/>
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox Grid.Column="0" Text="{Binding OutputPath}"
+                 Watermark="Select output folder…" Margin="0,0,6,0"/>
+        <Button Grid.Column="1" Command="{Binding BrowseOutputCommand}"><Path Classes="icon" Data="{StaticResource IconFolder}" Width="15" Height="15"/></Button>
+      </Grid>
+    </StackPanel>
+
+    <!-- ── Row 2: Output type ────────────────────────────────────────── -->
+    <StackPanel Grid.Row="2" Grid.Column="1"
+                Spacing="4" Margin="16,0,0,12">
+      <TextBlock Text="OUTPUT TYPE" Classes="muted"/>
+      <ComboBox ItemsSource="{Binding CardModes}"
+                SelectedItem="{Binding CardMode}"
+                HorizontalAlignment="Stretch"/>
+    </StackPanel>
+
+    <!-- ── Col 0: data grid + toolbar (spans all rows) ───────────────── -->
+    <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"
+          RowDefinitions="*,Auto" Margin="0,0,16,0">
+
+      <DataGrid Grid.Row="0"
+                ItemsSource="{Binding ReadyEntries}"
+                SelectedItem="{Binding SelectedEntry}"
+                AutoGenerateColumns="False"
+                CanUserResizeColumns="True"
+                CanUserSortColumns="False"
+                SelectionMode="Extended"
+                SelectionChanged="OnSelectionChanged"
+                CellPointerPressed="OnCellPointerPressed"
+                IsReadOnly="False">
+        <DataGrid.Columns>
+          <DataGridCheckBoxColumn Header="✓"  Binding="{Binding IsSelected}"  Width="40"/>
+          <DataGridTextColumn Header="TITLE" Binding="{Binding DisplayText}" Width="*"   IsReadOnly="True"/>
+          <DataGridTextColumn Header="QR CODE"      Binding="{Binding QrCode}"      Width="338" IsReadOnly="True"/>
+          <DataGridTextColumn Header="STATUS"       Binding="{Binding Status}"      Width="192" IsReadOnly="True"/>
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <Border Grid.Row="1" Classes="toolbar">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Button Command="{Binding SetGenerateCommand}" Padding="10,4">Set Generate</Button>
+          <Button Command="{Binding SetDontGenerateCommand}" Padding="10,4">Set Don't Generate</Button>
+          <CheckBox IsChecked="{Binding OnlyWithArt}" FontSize="11" VerticalAlignment="Center" Padding="4,0">Only with art</CheckBox>
+        </StackPanel>
+      </Border>
+
+    </Grid>
+
+    <!-- ── Col 1 Row 3: scrollable settings ─────────────────────────── -->
+    <ScrollViewer Grid.Row="3" Grid.Column="1"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Margin="16,0,0,0">
+      <StackPanel Spacing="4">
+
+        <!-- QR Only options -->
+        <StackPanel Spacing="10" IsVisible="{Binding IsQrOnly}">
+          <CheckBox IsChecked="{Binding QrGenerateSheet}" FontSize="11">Generate sheet</CheckBox>
+          <Grid IsVisible="{Binding QrGenerateSheet}"
+                ColumnDefinitions="Auto,70,Auto"
+                RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" Text="SHEET SIZE (px)"          Classes="muted" Margin="0,0,0,4"/>
+            <TextBlock Grid.Row="1"  Grid.Column="0" Text="Width (px):"    Classes="muted" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <TextBox   Grid.Row="1"  Grid.Column="1" Text="{Binding QrSheetWidthPx,  Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="1"  Grid.Column="2" Text="{Binding QrSheetWidthInches}"  Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,0"/>
+            <TextBlock Grid.Row="2"  Grid.Column="0" Text="Height:"   Classes="muted" VerticalAlignment="Center" Margin="0,4,6,0"/>
+            <TextBox   Grid.Row="2"  Grid.Column="1" Margin="0,4,0,0" Text="{Binding QrSheetHeightPx, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="2"  Grid.Column="2" Text="{Binding QrSheetHeightInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,4,0,0"/>
+            <TextBlock Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="3" Text="GRID"               Classes="muted" Margin="0,12,0,4"/>
+            <TextBlock Grid.Row="4"  Grid.Column="0" Text="# Across:"     Classes="muted" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <TextBox   Grid.Row="4"  Grid.Column="1" Text="{Binding QrAcross, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="5"  Grid.Column="0" Text="# Down:"       Classes="muted" VerticalAlignment="Center" Margin="0,4,6,0"/>
+            <TextBox   Grid.Row="5"  Grid.Column="1" Margin="0,4,0,0" Text="{Binding QrDown, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="3" Text="MARGIN ON CENTER (px)" Classes="muted" Margin="0,12,0,4" ToolTip.Tip="Distance from sheet edge to centre of corner QR codes"/>
+            <TextBlock Grid.Row="7"  Grid.Column="0" Text="Horizontal:"   Classes="muted" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <TextBox   Grid.Row="7"  Grid.Column="1" Text="{Binding QrHMarginCenter, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="7"  Grid.Column="2" Text="{Binding QrHMarginCenterInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,0"/>
+            <TextBlock Grid.Row="8"  Grid.Column="0" Text="Vertical:"     Classes="muted" VerticalAlignment="Center" Margin="0,4,6,0"/>
+            <TextBox   Grid.Row="8"  Grid.Column="1" Margin="0,4,0,0" Text="{Binding QrVMarginCenter, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="8"  Grid.Column="2" Text="{Binding QrVMarginCenterInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,4,0,0"/>
+            <TextBlock Grid.Row="9"  Grid.Column="0" Text="Vert. offset:" Classes="muted" VerticalAlignment="Center" Margin="0,4,6,0"/>
+            <TextBox   Grid.Row="9"  Grid.Column="1" Margin="0,4,0,0" Text="{Binding QrVerticalOffset, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+            <TextBlock Grid.Row="9"  Grid.Column="2" Text="{Binding QrVerticalOffsetInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,4,0,0"/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Start index:"  Classes="muted" VerticalAlignment="Center" Margin="0,4,6,0" ToolTip.Tip="First grid slot (1 = top-left)"/>
+            <TextBox   Grid.Row="10" Grid.Column="1" Margin="0,4,0,0" Text="{Binding QrStartIndex, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+          </Grid>
+        </StackPanel>
+
+        <!-- ── Format Settings (flat, no expander) ──────────────────── -->
+        <Grid ColumnDefinitions="120,70,Auto" Margin="0,4,0,4"
+              IsVisible="{Binding !IsQrOnly}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <!-- Sheet size (full sheet only) -->
+          <TextBlock Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" Text="SHEET SIZE (px)" Classes="muted" Margin="0,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="1"  Grid.Column="0" Text="Width:"        Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBox   Grid.Row="1"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding SheetWidthPx,  Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="1"  Grid.Column="2" Text="{Binding SheetWidthInches}"  Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="2"  Grid.Column="0" Text="Height:"       Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBox   Grid.Row="2"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding SheetHeightPx, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="2"  Grid.Column="2" Text="{Binding SheetHeightInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+
+          <!-- Card size -->
+          <TextBlock Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="3" Text="CARD SIZE (px)" Classes="muted" Margin="0,8,0,4"/>
+          <TextBlock Grid.Row="4"  Grid.Column="0" Text="Width:"        Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4"/>
+          <TextBox   Grid.Row="4"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding CardWidthPx,  Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+          <TextBlock Grid.Row="4"  Grid.Column="2" Text="{Binding CardWidthInches}"  Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4"/>
+          <TextBlock Grid.Row="5"  Grid.Column="0" Text="Height:"       Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4"/>
+          <TextBox   Grid.Row="5"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding CardHeightPx, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+          <TextBlock Grid.Row="5"  Grid.Column="2" Text="{Binding CardHeightInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4"/>
+          <TextBlock Grid.Row="6"  Grid.Column="0" Text="QR above btm:" Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4"/>
+          <TextBox   Grid.Row="6"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding QrAboveBottom, Converter={x:Static vm:NullableIntConverter.Instance}}"
+                     ToolTip.Tip="Distance from bottom of card to bottom of QR code (px). Default: 38"/>
+          <TextBlock Grid.Row="6"  Grid.Column="2" Text="{Binding QrAboveBottomInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4"/>
+
+          <!-- Card spacing (full sheet only) -->
+          <TextBlock Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="3" Text="CARD SPACING (px)" Classes="muted" Margin="0,8,0,4"
+                     IsVisible="{Binding IsFullSheet}"
+                     ToolTip.Tip="Gap between cards on the sheet. Art always fills the full card dimensions."/>
+          <TextBlock Grid.Row="8"  Grid.Column="0" Text="Horizontal:"   Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBox   Grid.Row="8"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding HorizontalSpacing, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="8"  Grid.Column="2" Text="{Binding HorizontalSpacingInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="9"  Grid.Column="0" Text="Vertical:"     Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding IsFullSheet}"/>
+          <TextBox   Grid.Row="9"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding VerticalSpacing, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="9"  Grid.Column="2" Text="{Binding VerticalSpacingInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+
+          <!-- Print margins (single card only) -->
+          <TextBlock Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="3" Text="PRINT MARGINS (px)" Classes="muted" Margin="0,8,0,4"
+                     IsVisible="{Binding !IsFullSheet}"
+                     ToolTip.Tip="Expands (positive) or crops (negative) the output image size. Art and background are never scaled — only the canvas changes."/>
+          <TextBlock Grid.Row="8"  Grid.Column="0" Text="Horizontal:"   Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding !IsFullSheet}"/>
+          <TextBox   Grid.Row="8"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding HorizontalSpacing, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding !IsFullSheet}"/>
+          <TextBlock Grid.Row="8"  Grid.Column="2" Text="{Binding HorizontalSpacingInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding !IsFullSheet}"/>
+          <TextBlock Grid.Row="9"  Grid.Column="0" Text="Vertical:"     Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding !IsFullSheet}"/>
+          <TextBox   Grid.Row="9"  Grid.Column="1" Margin="0,0,0,4"    Text="{Binding VerticalSpacing, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding !IsFullSheet}"/>
+          <TextBlock Grid.Row="9"  Grid.Column="2" Text="{Binding VerticalSpacingInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding !IsFullSheet}"/>
+
+          <!-- Vertical offset (full sheet only) -->
+          <TextBlock Grid.Row="10" Grid.Column="0" Text="Vert. offset:" Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4" IsVisible="{Binding IsFullSheet}"
+                     ToolTip.Tip="Positive moves the card grid up; negative moves it down."/>
+          <TextBox   Grid.Row="10" Grid.Column="1" Margin="0,0,0,4"    Text="{Binding VerticalOffset, Converter={x:Static vm:NullableIntConverter.Instance}}" IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="10" Grid.Column="2" Text="{Binding VerticalOffsetInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"/>
+
+          <!-- Bleed area — below margins/spacing -->
+          <TextBlock Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" Text="BLEED AREA (px)" Classes="muted" Margin="0,8,0,4"
+                     ToolTip.Tip="Positive = expands art and background beyond card edge. Negative = shrinks inward. No effect on square fill/fit modes."/>
+          <TextBlock Grid.Row="12" Grid.Column="0" Text="All edges:"    Classes="muted" VerticalAlignment="Center" Margin="0,0,6,4"/>
+          <TextBox   Grid.Row="12" Grid.Column="1" Margin="0,0,0,4"    Text="{Binding ArtBleed, Converter={x:Static vm:NullableIntConverter.Instance}}"/>
+          <TextBlock Grid.Row="12" Grid.Column="2" Text="{Binding ArtBleedInches}" Classes="muted" FontSize="10" VerticalAlignment="Center" Margin="6,0,0,4"/>
+
+          <!-- Flip fronts row (full sheet only) -->
+          <CheckBox  Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding FlipFrontsRow}" FontSize="11" Margin="0,8,0,0"
+                     IsVisible="{Binding IsFullSheet}"
+                     ToolTip.Tip="Reverses card order per row on the fronts sheet for duplex printing">Flip fronts row (duplex)</CheckBox>
+
+          <!-- Outline (full sheet only) -->
+          <CheckBox  Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding DrawOutline}" FontSize="11" Margin="0,8,0,0"
+                     IsVisible="{Binding IsFullSheet}"
+                     ToolTip.Tip="Draw a thin outline around each card position">
+            Draw card outline
+          </CheckBox>
+          <TextBlock Grid.Row="15" Grid.Column="0" Text="Corner radius:" Classes="muted" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,4"
+                     IsVisible="{Binding IsFullSheet}" Foreground="{StaticResource TextMutedBrush}"/>
+          <TextBox   Grid.Row="15" Grid.Column="1" Margin="0,0,0,4"    Text="{Binding OutlineCornerRadius}" FontSize="11"
+                     IsVisible="{Binding IsFullSheet}"/>
+          <TextBlock Grid.Row="15" Grid.Column="2" Text="{Binding OutlineCornerRadiusInches}" FontSize="11"
+                     VerticalAlignment="Center" Margin="6,0,0,4" IsVisible="{Binding IsFullSheet}"
+                     Foreground="{StaticResource TextMutedBrush}"/>
+
+          <Border Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3"
+                  Background="{StaticResource BgElevatedBrush}"
+                  BorderBrush="{StaticResource BorderBrush}"
+                  BorderThickness="1" CornerRadius="3" Padding="8,6" Margin="0,8,0,0">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="muted" FontSize="10" Text="Resolution: 300 DPI"/>
+              <TextBlock Classes="muted" FontSize="10" Text="QR: 100×100 px, v2 ECC-L"/>
+            </StackPanel>
+          </Border>
+
+        </Grid>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ── Row 4 Col 1: status + generate button ─────────────────────── -->
+    <StackPanel Grid.Row="4" Grid.Column="1"
+                Spacing="6" Margin="16,8,0,0">
+      <Button Command="{Binding GenerateCommand}"
+              Classes="accent"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center"
+              IsEnabled="{Binding !IsGenerating}"
+              FontSize="13"
+              Padding="12,10">
+        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center"><Path Classes="icon-filled" Data="{StaticResource IconPlay}" Width="17" Height="17"/><TextBlock Text="Generate Cards" VerticalAlignment="Center"/></StackPanel>
+      </Button>
+    </StackPanel>
+
+  </Grid>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CardPlayer.Views.ColorPickerBox"
+             x:Name="Root">
+
+  <Grid ColumnDefinitions="28,*">
+
+    <Border x:Name="Swatch"
+            Grid.Column="0"
+            Width="24" Height="24"
+            CornerRadius="3"
+            BorderThickness="1"
+            BorderBrush="#60000000"
+            Background="#FFFFFF"
+            Margin="0,0,4,0"
+            Cursor="Hand"
+            VerticalAlignment="Center"
+            PointerPressed="Swatch_PointerPressed"/>
+
+    <TextBox Grid.Column="1"
+             x:Name="HexBox"
+             MaxLength="7"
+             Watermark="#RRGGBB"
+             VerticalAlignment="Center"
+             TextChanged="HexBox_TextChanged"
+             LostFocus="HexBox_LostFocus"/>
+
+    <Popup x:Name="Picker"
+           PlacementTarget="{Binding ElementName=Swatch}"
+           Placement="BottomEdgeAlignedLeft"
+           IsLightDismissEnabled="True">
+
+      <Border Background="{StaticResource BgSurfaceBrush}"
+              BorderBrush="{StaticResource BorderBrush}"
+              BorderThickness="1"
+              CornerRadius="5"
+              Padding="10"
+              Width="230">
+
+        <StackPanel Spacing="2">
+
+          <!-- SV square -->
+          <Canvas x:Name="SvCanvas"
+                  Width="206" Height="206"
+                  Background="Transparent"
+                  Cursor="Cross"
+                  PointerPressed="SvCanvas_PointerPressed"
+                  PointerMoved="SvCanvas_PointerMoved"
+                  Margin="0,0,0,4">
+            <Image x:Name="SvImage" Width="206" Height="206" IsHitTestVisible="False"/>
+            <Ellipse x:Name="SvDot"
+                     Width="10" Height="10"
+                     Stroke="White" StrokeThickness="1.5"
+                     Fill="Transparent"
+                     IsHitTestVisible="False"
+                     Canvas.Left="0" Canvas.Top="0"/>
+          </Canvas>
+
+          <!-- Color preview strip -->
+          <Border x:Name="PreviewSwatch"
+                  Height="16"
+                  CornerRadius="3"
+                  BorderThickness="1"
+                  BorderBrush="#60000000"
+                  HorizontalAlignment="Stretch"
+                  Margin="0,0,0,2"/>
+
+          <Grid ColumnDefinitions="16,*" Margin="0,0,0,0">
+            <TextBlock Grid.Column="0" Text="H" Classes="muted" VerticalAlignment="Center" FontSize="10"/>
+            <Slider Grid.Column="1" x:Name="HueSlider" Minimum="0" Maximum="360" Padding="0" Margin="0"/>
+          </Grid>
+
+          <Grid ColumnDefinitions="16,*" Margin="0,-10,0,0">
+            <TextBlock Grid.Column="0" Text="S" Classes="muted" VerticalAlignment="Center" FontSize="10"/>
+            <Slider Grid.Column="1" x:Name="SatSlider" Minimum="0" Maximum="100" Padding="0" Margin="0"/>
+          </Grid>
+
+          <Grid ColumnDefinitions="16,*" Margin="0,-10,0,-8">
+            <TextBlock Grid.Column="0" Text="V" Classes="muted" VerticalAlignment="Center" FontSize="10"/>
+            <Slider Grid.Column="1" x:Name="ValSlider" Minimum="0" Maximum="100" Padding="0" Margin="0"/>
+          </Grid>
+
+        </StackPanel>
+      </Border>
+    </Popup>
+
+  </Grid>
+</UserControl>

@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CardPlayer.ViewModels"
+             x:Class="CardPlayer.Views.HardwareSetupView"
+             x:DataType="vm:HardwareSetupViewModel">
+
+  <DockPanel>
+    <!-- White separator bar below top-level tabs -->
+    <Border DockPanel.Dock="Top" Height="5" Background="{StaticResource AccentBrush}"/>
+
+    <StackPanel Margin="24" Spacing="20" MaxWidth="400" HorizontalAlignment="Left">
+
+    <TextBlock Text="SERIAL DEVICE" Classes="sectionHeader" FontSize="13"/>
+
+    <TextBlock Classes="muted" TextWrapping="Wrap"
+               Text="The VID and PID identify your card reader hardware on the USB bus. These are in hexadecimal (no 0x prefix). Changes take effect after restarting the app."/>
+
+    <StackPanel Spacing="4">
+      <TextBlock Text="VENDOR ID (VID)" Classes="muted"/>
+      <TextBox Text="{Binding Vid}" Watermark="e.g. 2E8A" Width="160" HorizontalAlignment="Left"
+               FontFamily="Consolas, monospace"/>
+    </StackPanel>
+
+    <StackPanel Spacing="4">
+      <TextBlock Text="PRODUCT ID (PID)" Classes="muted"/>
+      <TextBox Text="{Binding Pid}" Watermark="e.g. 000A" Width="160" HorizontalAlignment="Left"
+               FontFamily="Consolas, monospace"/>
+    </StackPanel>
+
+    <TextBlock Classes="muted" TextWrapping="Wrap"
+               Text="To find your device's VID/PID: open Device Manager → Ports (COM &amp; LPT) → right-click your device → Properties → Details → Hardware IDs."/>
+
+
+
+  </StackPanel>
+  </DockPanel>
+</UserControl>

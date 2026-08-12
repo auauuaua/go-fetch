@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CardPlayer.ViewModels"
+        xmlns:v="using:CardPlayer.Views"
+        x:Class="CardPlayer.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="go fetch Card Player Editor"
+        Icon="avares://go fetch Card Player/Resources/CardPlayer.ico"
+        Width="1200" Height="750"
+        MinWidth="900" MinHeight="550"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="27">
+
+  <Window.KeyBindings>
+  </Window.KeyBindings>
+
+  <Grid RowDefinitions="27,Auto,*,Auto">
+
+    <!-- ── Row 0: Custom title bar ───────────────────────────────────────── -->
+    <Border Grid.Row="0"
+            Background="{StaticResource BgSurfaceBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="0,1,0,0"
+            PointerPressed="TitleBar_PointerPressed">
+    <Grid ColumnDefinitions="*,Auto">
+
+      <!-- Drag region fills left side -->
+      <Rectangle Fill="Transparent" IsHitTestVisible="False"/>
+
+      <!-- Window controls — right side -->
+      <StackPanel Grid.Column="1" Orientation="Horizontal"
+                  VerticalAlignment="Stretch" Spacing="0">
+
+        <!-- Minimize -->
+        <Button Click="MinimizeButton_Click"
+                Width="40" Height="27"
+                Padding="0"
+                BorderThickness="0"
+                CornerRadius="0"
+                Background="Transparent">
+          <TextBlock Text="&#x2013;" FontSize="14"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Button>
+
+        <!-- Maximize / Restore -->
+        <Button Click="MaximizeButton_Click"
+                Width="40" Height="27"
+                Padding="0"
+                BorderThickness="0"
+                CornerRadius="0"
+                Background="Transparent">
+          <TextBlock x:Name="MaximizeIcon" Text="□" FontSize="12"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Button>
+
+        <!-- Close -->
+        <Button x:Name="CloseButton"
+                Click="CloseButton_Click"
+                Width="40" Height="27"
+                Padding="0"
+                BorderThickness="0"
+                CornerRadius="0"
+                Background="Transparent"
+                Classes="titleClose">
+          <TextBlock Text="&#x2715;" FontSize="12"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Button>
+
+      </StackPanel>
+    </Grid>
+    </Border>
+
+    <!-- ── Row 1: Toolbar ────────────────────────────────────────────────── -->
+    <Border Classes="toolbar" Grid.Row="1" PointerPressed="TitleBar_PointerPressed">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+          <Image Source="avares://go fetch Card Player/Resources/CardPlayer_title.png"
+                 Height="58"
+                 VerticalAlignment="Center"
+                 Margin="0,-20,24,0"
+                 IsHitTestVisible="False"
+                 RenderOptions.BitmapInterpolationMode="HighQuality"
+                 UseLayoutRounding="False"/>
+        </StackPanel>
+
+        <!-- Remote Passthrough — docked Right first so it lands on the far right -->
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="12,0,4,0">
+          <Separator Width="1" Height="20" Background="{StaticResource BorderBrush}"/>
+          <TextBlock Text="Remote Passthrough" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+          <ToggleSwitch IsChecked="{Binding RemotePassthroughEnabled}"
+                        OnContent="" OffContent=""
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="When enabled, IR commands are dispatched using the selected player even when no card is inserted"/>
+          <TextBlock Text="Player:" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" Margin="6,0,0,0"
+                     ToolTip.Tip="Player to use for remote commands when no card is inserted"/>
+          <ComboBox ItemsSource="{Binding PassthroughPlayers}"
+                    SelectedItem="{Binding SelectedPassthroughPlayerType}"
+                    MinWidth="110" FontSize="12" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Save / Discard — docked Right second so it sits left of passthrough -->
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Classes="accent" Command="{Binding SaveAllCommand}" IsEnabled="{Binding IsLoaded}"
+                  Height="30" Padding="12,0" VerticalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+              <Path Classes="icon" Data="{StaticResource IconSave}" Width="15" Height="15"/>
+              <TextBlock Text="Save All" VerticalAlignment="Center" FontSize="12"/>
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding DiscardAllCommand}"
+                  IsEnabled="{Binding IsLoaded}"
+                  Height="30" Padding="12,0" VerticalContentAlignment="Center"
+                  ToolTip.Tip="Discard all unsaved changes and reload from disk">
+            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+              <Path Classes="icon" Data="{StaticResource IconRefresh}" Width="15" Height="15"/>
+              <TextBlock Text="Discard Changes" VerticalAlignment="Center" FontSize="12"/>
+            </StackPanel>
+          </Button>
+          <Ellipse Classes="dirtyDot" IsVisible="{Binding AnyDirty}" ToolTip.Tip="Unsaved changes"/>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- ── Row 2: Tab content ────────────────────────────────────────────── -->
+    <TabControl Grid.Row="2" Classes="topLevel" SelectedIndex="{Binding SelectedTabIndex}">
+
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Cards" Classes="tabLabel"/>
+            <Ellipse Classes="dirtyDot" IsVisible="{Binding CardsVm.IsDirty}"/>
+          </StackPanel>
+        </TabItem.Header>
+        <v:CardsView DataContext="{Binding CardsVm}"/>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Players" Classes="tabLabel"/>
+            <Ellipse Classes="dirtyDot" IsVisible="{Binding PlayersVm.IsDirty}"/>
+          </StackPanel>
+        </TabItem.Header>
+        <v:PlayersView DataContext="{Binding PlayersVm}"/>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Print Generator" Classes="tabLabel"/>
+            <Ellipse Classes="dirtyDot" IsVisible="{Binding PrintGeneratorVm.IsDirty}"/>
+          </StackPanel>
+        </TabItem.Header>
+        <v:PrintGeneratorView DataContext="{Binding PrintGeneratorVm}"/>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Remote Setup" Classes="tabLabel"/>
+            <Ellipse Classes="dirtyDot" IsVisible="{Binding RemoteSetupVm.IsDirty}"/>
+          </StackPanel>
+        </TabItem.Header>
+        <v:RemoteSetupView DataContext="{Binding RemoteSetupVm}"/>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Hardware" Classes="tabLabel"/>
+            <Ellipse Classes="dirtyDot" IsVisible="{Binding HardwareSetupVm.IsDirty}"/>
+          </StackPanel>
+        </TabItem.Header>
+        <v:HardwareSetupView DataContext="{Binding HardwareSetupVm}"/>
+      </TabItem>
+    </TabControl>
+
+    <!-- ── Row 3: Status bar ──────────────────────────────────────────────── -->
+    <Border Classes="statusbar" Grid.Row="3">
+      <TextBlock Text="{Binding StatusMessage}" Classes="muted"
+             Foreground="{Binding StatusIsError, Converter={x:Static vm:BoolToErrorBrushConverter.Instance}}"/>
+    </Border>
+
+  </Grid>
+</Window>

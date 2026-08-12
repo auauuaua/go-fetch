@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CardPlayer.Views.SaveOnExitDialog"
+        Title="Unsaved Changes"
+        Width="360" Height="160"
+        MinWidth="360" MinHeight="160"
+        MaxWidth="360" MaxHeight="160"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="0"
+        SystemDecorations="None">
+
+  <Border Background="{StaticResource BgSurfaceBrush}"
+          BorderBrush="{StaticResource BorderBrush}"
+          BorderThickness="1"
+          CornerRadius="6">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,20">
+
+      <!-- Icon + message -->
+      <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <Path Classes="icon"
+              Data="{StaticResource IconWarning}"
+              Width="20" Height="20"
+              VerticalAlignment="Center"/>
+        <StackPanel Spacing="2">
+          <TextBlock Text="You have unsaved changes."
+                     FontSize="13" FontWeight="SemiBold"
+                     Foreground="{StaticResource TextPrimaryBrush}"/>
+          <TextBlock Text="Save before closing?"
+                     FontSize="12"
+                     Foreground="{StaticResource TextMutedBrush}"/>
+        </StackPanel>
+      </StackPanel>
+
+      <!-- Buttons -->
+      <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button x:Name="NoButton"
+                Content="Don't Save"
+                Width="100" Height="30"
+                Padding="12,0"
+                VerticalContentAlignment="Center"
+                FontSize="12"
+                Click="NoButton_Click"/>
+        <Button x:Name="YesButton"
+                Content="Save"
+                Classes="accent"
+                Width="80" Height="30"
+                Padding="12,0"
+                VerticalContentAlignment="Center"
+                FontSize="12"
+                Click="YesButton_Click"/>
+      </StackPanel>
+
+    </Grid>
+  </Border>
+
+</Window>
