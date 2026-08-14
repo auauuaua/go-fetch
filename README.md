@@ -2,7 +2,7 @@
 ## De-digital horror-ify your life: hands on  physical method for accessing digital media
 ...and software to make viewing it suck less
 
-## A system for easily pulling up your favorite photo albums, music playlists, etc, without ever touching a computer or phone.
+## A system for easily pulling up your favorite photo albums, music playlists, etc, without touching a computer or phone.
 
 The hardware and companion Windows software allows you to link a QR code to any file/website/etc.
 
